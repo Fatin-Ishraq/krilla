@@ -1,0 +1,12 @@
+{
+  "notice": "Historical Typst integration experiment; not a current-main performance claim",
+  "typst_revision": "bd5ebec285505889e8ff1d4f68804ab147a699f3",
+  "krilla_revision": "7772dbee5ba576b7b7afe2c59cbe4c2fefe7ce9c",
+  "runtime_jobs": [
+    1,
+    12
+  ],
+  "filesystem": "warm",
+  "trials_per_binary": 10,
+  "authorship": "AI-authored implementation and validation preparation"
+}

@@ -1,0 +1,42 @@
+name: Filter cache Apple rendering
+
+on:
+  push:
+    branches: [codex/filtered-svg-cache-validation]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  apple-pdfkit:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      CARGO_BUILD_JOBS: "2"
+      SOURCE_DATE_EPOCH: "1700000000"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.92.0
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-bin: false
+          workspaces: validation/cache-harness
+      - name: Record environment
+        run: |
+          sw_vers
+          uname -m
+          rustc --version
+      - name: Generate baseline and cached PDFs
+        run: cargo run --manifest-path validation/cache-harness/Cargo.toml --locked --release -- assets validation/fixtures validation/output
+      - name: Compare native Apple PDFKit rendering
+        run: swift validation/native-pdfkit.swift validation/output
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: apple-pdfkit-${{ matrix.os }}
+          path: validation/output
